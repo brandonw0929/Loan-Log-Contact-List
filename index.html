@@ -1,1 +1,155 @@
-<h1> Index Page </h1>
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="UTF-8">
+  <title>Loan Log</title>
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+</head>
+
+<body>
+    <script src="https://www.gstatic.com/firebasejs/5.5.1/firebase.js"></script>
+    <div class="container">
+  
+      <br>
+  
+      <!-- Jumbotron Title -->
+      <div style="background-color:darkslategrey" class="jumbotron">
+
+        <h2 style="color:white"class="text-center">Prospect Log</h2>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header">
+              Borrower Info:
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="form-group row">
+                  <label for="borrowerName">Name:</label>
+                  <input class="form-control" id="borrowerName" type="text">
+                </div>
+                <div class="form-group row">
+                  <label for="borrowerAddress">Address: </label>
+                  <input class="form-control" id="borrowerAddress" type="text">
+                </div>
+                <div class="form-group row">
+                    <label for="loanAmount">Loan Amount: </label>
+                    <input class="form-control" id="loanAmount" type="number">
+                </div>
+                <div class="form-group row">
+                    <label for="borrowerRate">Rate: </label>
+                    <input class="form-control" id="borrowerRate" type="number">
+                </div>
+                <button class="btn btn-primary" id="addBorrower" type="submit">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+          
+      </div>
+      <div id="map" style="height: 500px; position: relative; overflow: hidden;">
+        <div style="height: 100%; width: 100%; position: absolute; top: 0px; left: 0px; background-color: rgb(229, 227, 223);">…</div>
+      </div>
+
+    </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/5.5.1/firebase.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+  
+      // Initialize Firebase
+      // Make sure to match the configuration to the script version number in the HTML
+      // (Ex. 3.0 != 3.7.0)        
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyB2TRIu3_72fmr40ZFHrZpXI5rITk8iu0c",
+        authDomain: "project-1-for-trilogy.firebaseapp.com",
+        databaseURL: "https://project-1-for-trilogy.firebaseio.com",
+        projectId: "project-1-for-trilogy",
+        storageBucket: "project-1-for-trilogy.appspot.com",
+        messagingSenderId: "882083800379"
+      };
+        firebase.initializeApp(config);
+
+        // Create a variable to reference the database.
+        var database = firebase.database();
+
+        // Initial Values
+        var borrowerName = "";
+        var borrowerAddress = "";
+        var loanAmount = 0;
+        var borrowerRate = 0;
+        
+        // Capture Button Click
+        $("#addBorrower").on("click", function(event) {
+          event.preventDefault();
+          // Grabbed values from text boxes
+          borrowerName = $("#borrowerName").val().trim();
+          borrowerAddress = $("#borrowerAddress").val().trim();
+          loanAmount = $("#loanAmount").val().trim();
+          borrowerRate= $("#borrowerRate").val().trim();
+          // Code for handling the push
+          database.ref().push({
+            borrowerName: borrowerName,
+            borrowerAddress: borrowerAddress,
+            loanAmount: loanAmount,
+            borrowerRate: borrowerRate,
+            dateAdded: firebase.database.ServerValue.TIMESTAMP
+          });
+        });
+        // Firebase watcher .on("child_added"
+        database.ref().on("child_added", function(snapshot) {
+        // storing the snapshot.val() in a variable for convenience
+        var sv = snapshot.val();
+        // Console.loging the last user's data
+        console.log(sv.borrowerName);
+        console.log(sv.borrowerAddress);
+        console.log(sv.loanAmount);
+        console.log(sv.borrowerRate);
+        console.log(sv.list)
+        // Change the HTML to reflect
+
+        $('.container').append('\
+          <div class="col-lg-6">\
+            <div class="card card-default">\
+                <div id="todo-item" class="card-header">Contact Info</div>\
+                <div id="to-do" class="card-body" id="recent-member">\
+                    <h2 id="borrowerName-display">' + snapshot.val().borrowerName + '</h2>\
+                    <h4 id="borrowerAddress-display">' + snapshot.val().borrowerAddress + '</h4>\
+                    <h4 id="loanAmount-display">' + snapshot.val().loanAmount + '</h4>\
+                    <p id="borrowerRate-display">' + snapshot.val().borrowerRate + '</p>\
+                </div>\
+            </div>\
+        </div>\
+        ');
+      });
+
+      function initMap() {
+            window.map = new google.maps.Map(document.getElementById('map'), {
+                center: {
+                    lat: 28.5383,
+                    lng: -81.3792
+                },
+                zoom: 10
+            });
+
+            window.marker = marker = new google.maps.Marker({
+              position: {
+                lat: 28.5383,
+                lng: -81.3792
+              },
+              map: map
+            });
+        };
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDRlnpF8ZCi-H6a_Qmh9_4pnDAM0NQWcas&callback=initMap" async defer></script>
+  </body>
+</html>
